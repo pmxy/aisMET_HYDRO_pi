@@ -4,7 +4,7 @@
 
 #include <iomanip>
 
-#include "ais2.h"
+#include "ais.h"
 
 namespace mylibais {
 
@@ -68,14 +68,14 @@ namespace mylibais {
 	  air_temp = bits.ToInt(154, 11) / 10.;  // C
 	  rel_humid = bits.ToUnsignedInt(165, 7);
 	  dew_point = bits.ToInt(172, 10)/ 10.;  // TODO(schwehr): How is this mapped?
-	  air_pres = (bits.ToUnsignedInt(182, 9) + 800) / 100.0;  // Pa
+	  air_pres = (bits.ToUnsignedInt(182, 9) + 800);  // Pa
 	  air_pres_trend = bits.ToUnsignedInt(191, 2);
 
 	  horz_vis = bits.ToUnsignedInt(193, 8) / 10.;  // NM
-	  water_level = bits.ToUnsignedInt(201, 12) / 100. - 10;  // m
+	  water_level = bits.ToUnsignedInt(201, 12);  // m
 	  water_level_trend = bits.ToUnsignedInt(213, 2);
 
-	  surf_cur_speed = bits.ToUnsignedInt(215, 8) / 10.;
+	  surf_cur_speed = bits.ToUnsignedInt(215, 8);
 	  surf_cur_dir = bits.ToUnsignedInt(223, 9);
 	  cur_speed_2 = bits.ToUnsignedInt(232, 8) / 10.;  // kts
 	  cur_dir_2 = bits.ToUnsignedInt(240, 9);

@@ -14,16 +14,16 @@
 # -------- Options ----------
 
 set(OCPN_TEST_REPO
-    "mike-rossiter/aisrx-alpha"
+    "opencpn/aismet_hydro-alpha"
     CACHE STRING "Default repository for untagged builds"
 )
 set(OCPN_BETA_REPO
-    "mike-rossiter/aisrx-beta"
+    "opencpn/aismet_hydro-beta"
     CACHE STRING 
     "Default repository for tagged builds matching 'beta'"
 )
 set(OCPN_RELEASE_REPO
-    "mike-rossiter/aisrx-prod"
+    "opencpn/aismet_hydro-prod"
     CACHE STRING 
     "Default repository for tagged builds not matching 'beta'"
 )
@@ -34,14 +34,14 @@ option(aisMET_HYDRO_USE_SVG "Use SVG graphics" ON)
 # -------  Plugin setup --------
 #
 set(PKG_NAME aisMET_HYDRO_pi)
-set(PKG_VERSION  3.0.0)
+set(PKG_VERSION  0.1.0)
 set(PKG_PRERELEASE "")  # Empty, or a tag like 'beta'
 
 set(DISPLAY_NAME aisMET_HYDRO)    # Dialogs, installer artifacts, ...
 set(PLUGIN_API_NAME aisMET_HYDRO) # As of GetCommonName() in plugin API
-set(PKG_SUMMARY "Read AIS binary messages")
+set(PKG_SUMMARY "Met and hydro AIS binary messages")
 set(PKG_DESCRIPTION [=[
-Read AIS binary messages
+Read AIS binary messages for met and hydro data.
 ]=])
 
 set(PKG_AUTHOR "Mike Rossiter")
@@ -50,8 +50,7 @@ set(PKG_HOMEPAGE https://github.com/Rasbats/aisMET_HYDRO_pi)
 set(PKG_INFO_URL https://opencpn.org/OpenCPN/plugins/aisMET_HYDRO.html)
 
 set(SRC
-	src/ais2.h
-	src/ais8_200.cpp
+	src/ais.h
 	src/ais8.cpp
 	src/ais_bitset2.cpp
 	src/AIS_Bitstring.cpp
@@ -102,8 +101,5 @@ macro(add_plugin_libraries)
 
   add_subdirectory("libs/jsoncpp")
   target_link_libraries(${PACKAGE_NAME} ocpn::jsoncpp)
-
-  add_subdirectory("libs/sqlite")
-  target_link_libraries(${PACKAGE_NAME} sqlite::sqlite)
 
 endmacro ()

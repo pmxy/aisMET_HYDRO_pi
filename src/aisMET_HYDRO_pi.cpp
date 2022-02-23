@@ -101,21 +101,6 @@ aisMET_HYDRO_pi::~aisMET_HYDRO_pi(void)
 
     delete _img_aisMET_HYDROIcon;
 
-    if (m_pDialog) {
-
-        wxFileConfig* pConf = GetOCPNConfigObject();
-
-        if (pConf) {
-
-            pConf->SetPath(_T("/Settings/aisMET_HYDRO"));
-
-            pConf->Write(_T("aisMET_HYDROUseAis"), m_bCopyUseAis);
-            pConf->Write(_T("aisMET_HYDROUseFile"), m_bCopyUseFile);
-            pConf->Write(_T("aisMET_HYDROMMSI"), m_tCopyMMSI);
-        }
-
-
-    }
 }
 
 int aisMET_HYDRO_pi::Init(void)
@@ -123,8 +108,6 @@ int aisMET_HYDRO_pi::Init(void)
     AddLocaleCatalog(_T("opencpn-aisMET_HYDRO_pi"));
 
 	      //      Establish the location of the database file
-     
-
 
     // Set some default private member parameters
     m_hr_dialog_x = 40;
@@ -142,31 +125,6 @@ int aisMET_HYDRO_pi::Init(void)
 
     //    And load the configuration items
     LoadConfig();
-
-	wxString dbpath;
-
-	wxFileName fn;
-    wxString tmp_path;
-
-    tmp_path = GetPluginDataDir("aisMET_HYDRO_pi");
-    fn.SetPath(tmp_path);
-    fn.AppendDir(_T("data"));
-
-    fn.SetFullName(_T("RIS.db"));
-	dbpath = fn.GetFullPath();
-
-      bool newDB = !wxFileExists(dbpath);
-      b_dbUsable = true;
-
-	  void* cache; // SOLUTION
-
-	ret = sqlite3_open_v2(dbpath.mb_str(), &m_database, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-      if (ret != SQLITE_OK)
-      {
-          wxLogMessage (_T("aisMET_HYDRO_PI: cannot open '%s': %s\n"), DATABASE_NAME, sqlite3_errmsg (m_database));
-	      sqlite3_close (m_database);
-	      b_dbUsable = false;
-      }
 
     //    This PlugIn needs a toolbar icon, so request its insertion
     if (m_baisMET_HYDROShowIcon) {
@@ -193,7 +151,7 @@ int aisMET_HYDRO_pi::Init(void)
 
     return (WANTS_OVERLAY_CALLBACK | WANTS_OPENGL_OVERLAY_CALLBACK
         | WANTS_TOOLBAR_CALLBACK | INSTALLS_TOOLBAR_TOOL | WANTS_CURSOR_LATLON
-         | WANTS_AIS_SENTENCES  | WANTS_NMEA_SENTENCES | WANTS_PREFERENCES
+         | WANTS_AIS_SENTENCES  | WANTS_NMEA_SENTENCES 
         | WANTS_PLUGIN_MESSAGING | WANTS_CONFIG);
 }
 
@@ -216,7 +174,6 @@ bool aisMET_HYDRO_pi::DeInit(void)
         SetaisMET_HYDRODialogY(p.y);
         SetaisMET_HYDRODialogSizeX(r.GetWidth());
         SetaisMET_HYDRODialogSizeY(r.GetHeight());
-
 		
 
 		if(m_pDialog) {
@@ -231,14 +188,8 @@ bool aisMET_HYDRO_pi::DeInit(void)
 
 	}
     		
-	
 	SaveConfig();
     
-	
-	int m = sqlite3_close(m_database);
-
-	wxLogMessage (_T("aisMET_HYDRO_PI: Close Msg: %i\n"), m);
-
     RequestRefresh(m_parent_window); // refresh main window
 
     return true;
@@ -281,38 +232,6 @@ void aisMET_HYDRO_pi::SetColorScheme(PI_ColorScheme cs)
     DimeWindow(m_pDialog);
 }
 
-void aisMET_HYDRO_pi::ShowPreferencesDialog(wxWindow* parent)
-{
-    aisMET_HYDROPreferences* Pref = new aisMET_HYDROPreferences(parent);
-
-    Pref->m_cbTransmitAis->SetValue(m_bCopyUseAis);
-    Pref->m_cbAisToFile->SetValue(m_bCopyUseFile);
-    Pref->m_textCtrlMMSI->SetValue(m_tCopyMMSI);
-
-    if (Pref->ShowModal() == wxID_OK) {
-
-        bool copyAis = Pref->m_cbTransmitAis->GetValue();
-        bool copyFile = Pref->m_cbAisToFile->GetValue();
-        wxString copyMMSI = Pref->m_textCtrlMMSI->GetValue();
-
-        if (m_bCopyUseAis != copyAis || m_bCopyUseFile != copyFile
-            || m_tCopyMMSI != copyMMSI) {
-            m_bCopyUseAis = copyAis;
-            m_bCopyUseFile = copyFile;
-            m_tCopyMMSI = copyMMSI;
-        }
-
-        if (m_pDialog) {
-            m_pDialog->m_bUseAis = m_bCopyUseAis;
-            m_pDialog->m_bUseFile = m_bCopyUseFile;
-            m_pDialog->m_tMMSI = m_tCopyMMSI;
-        }
-
-        SaveConfig();
-
-        RequestRefresh(m_parent_window); // refresh main window
-    }
-}
 
 void aisMET_HYDRO_pi::OnToolbarToolCallback(int id)
 {
@@ -485,10 +404,6 @@ bool aisMET_HYDRO_pi::LoadConfig(void)
     if (pConf) {
         pConf->SetPath(_T( "/Settings/aisMET_HYDRO_pi" ));
         pConf->Read(_T( "ShowaisMET_HYDROIcon" ), &m_baisMET_HYDROShowIcon, 1);
-        pConf->Read(_T("aisMET_HYDROUseAis"), &m_bCopyUseAis, 0);
-        pConf->Read(_T("aisMET_HYDROUseFile"), &m_bCopyUseFile, 0);
-        m_tCopyMMSI = pConf->Read(_T("aisMET_HYDROMMSI"), _T("12345"));
-
         m_hr_dialog_x = pConf->Read(_T ( "DialogPosX" ), 40L);
         m_hr_dialog_y = pConf->Read(_T ( "DialogPosY" ), 140L);
         m_hr_dialog_sx = pConf->Read(_T ( "DialogSizeX"), 330L);
@@ -514,10 +429,6 @@ bool aisMET_HYDRO_pi::SaveConfig(void)
     if (pConf) {
         pConf->SetPath(_T ( "/Settings/aisMET_HYDRO_pi" ));
         pConf->Write(_T ( "ShowaisMET_HYDROIcon" ), m_baisMET_HYDROShowIcon);
-        pConf->Write(_T("aisMET_HYDROUseAis"), m_bCopyUseAis);
-        pConf->Write(_T("aisMET_HYDROUseFile"), m_bCopyUseFile);
-        pConf->Write(_T("aisMET_HYDROMMSI"), m_tCopyMMSI);
-
         pConf->Write(_T ( "DialogPosX" ), m_hr_dialog_x);
         pConf->Write(_T ( "DialogPosY" ), m_hr_dialog_y);
         pConf->Write(_T ( "DialogSizeX"), m_hr_dialog_sx);
@@ -570,42 +481,4 @@ void aisMET_HYDRO_pi::SetNMEASentence(wxString& sentence)
 	
 	return;
 
-}
-
-void aisMET_HYDRO_pi::OnContextMenuItemCallback(int id)
-{
-
-    if (!m_pDialog)
-        return;
-
-    if (id == m_position_menu_id) {
-
-        m_cursor_lat = GetCursorLat();
-        m_cursor_lon = GetCursorLon();
-
-        m_pDialog->OnContextMenu(m_cursor_lat, m_cursor_lon);
-    }
-}
-
-void aisMET_HYDRO_pi::SetCursorLatLon(double lat, double lon)
-{
-    m_cursor_lat = lat;
-    m_cursor_lon = lon;
-}
-
-
-void aisMET_HYDRO_pi::dbGetTable(wxString sql, char ***results, int &n_rows, int &n_columns)
-{
-      ret = sqlite3_get_table (m_database, sql.mb_str(), results, &n_rows, &n_columns, &err_msg);
-      if (ret != SQLITE_OK)
-      {
-            wxLogMessage (_T("Database error: %s in query: %s\n"), *err_msg, sql.c_str());
-	      sqlite3_free (err_msg);
-            b_dbUsable = false;
-      }
-}
-
-void aisMET_HYDRO_pi::dbFreeResults(char **results)
-{
-      sqlite3_free_table (results);
 }

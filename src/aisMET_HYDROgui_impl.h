@@ -49,7 +49,7 @@
 #include <wx/thread.h>
 #include <wx/utils.h>
 
-#include "ais2.h"
+#include "ais.h"
 #include "signal.h"
 #include "widget.h"
 #include "AIS_Bitstring.h"
@@ -151,21 +151,21 @@ public:
 	bool                      b_nameFromCache;
 	/***************** weather obs *****/
 	double					  air_press;
-	string                  MMSI;
+	int                       MMSI;
 	/***************** 8_1_31 *****/
 	/********* provide an index*********/
 	  int utc_day;
 	  int utc_hour;
 	  int utc_min;
-
+	  wxString				Description;
   
 };
 
-//WX_DECLARE_HASH_MAP( int, AIS_Target_Data*, wxIntegerHash, wxIntegerEqual, AIS_Target_Hash );
-//WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );
+WX_DECLARE_HASH_MAP( int, AIS_Target_Data*, wxIntegerHash, wxIntegerEqual, AIS_Target_Hash );
+WX_DECLARE_HASH_MAP( int, wxString, wxIntegerHash, wxIntegerEqual, AIS_Target_Name_Hash );
 
-WX_DECLARE_HASH_MAP( string, AIS_Target_Data*, wxStringHash, wxStringEqual, AIS_Target_Hash );
-WX_DECLARE_HASH_MAP( string, wxString, wxStringHash, wxStringEqual, AIS_Target_Name_Hash );
+//WX_DECLARE_HASH_MAP( string, AIS_Target_Data*, wxStringHash, wxStringEqual, AIS_Target_Hash );
+//WX_DECLARE_HASH_MAP( string, wxString, wxStringHash, wxStringEqual, AIS_Target_Name_Hash );
 
 
 // An identifier to notify the application when the // work is done #define
@@ -253,13 +253,10 @@ public:
 	int              m_n_targets;
 
     AIS_Target_Hash *GetTargetList(void) {return AISTargetList;}
-   // AIS_Target_Data *Get_Target_Data_From_HECT(int mmsi);
+    //AIS_Target_Data *Get_Target_Data_From_HECT(int mmsi);
 
     AIS_Target_Data* m_pLatestTargetData;
 
-	vector<AIS_Target_Data>  FindSignalData(int hect);
-	vector<AIS_Target_Data>  FindBridgeRISindex(int hect, wxString objcode);
-	vector<AIS_Target_Data>  FindSignalRISindex(int hect, wxString objcode);
 
 	wxString testing;
 	
@@ -301,10 +298,8 @@ public:
 	wxBitmap* wpIcon;
 	wxString StandardPath();
 
-	void OnContextMenu(double m_lat, double m_lon);
 	double initLat;
 	double initLon;
-	void GetSignal(AIS_Target_Data myTarget);
 	wxString mySentence;
 
 protected:
@@ -339,14 +334,12 @@ private:
 	bool DecodeForDAC(wxString insentence);
 	void Decode(wxString sentence);
     void OnTest(wxCommandEvent& event);
-	void OnSignalShow(wxCommandEvent& event);
 	wxString parseNMEASentence(wxString& sentence);
+
+	wxString MakeDescription(mylibais::Ais8_1_31 myData);
+
 	void getAis8_1_11(string rawPayload);
 	void getAis8_1_31(string rawPayload);
-	void getAis8_200_25(string rawPayload);
-	void getAis8_200_26(string rawPayload);
-	void getAis8_200_41(string rawPayload);
-	void getAis8_200_44(string rawPayload);
     // void SendAIS(double cse, double spd, double lat, double lon);
 
     void OnData(wxCommandEvent& event);
@@ -363,8 +356,6 @@ private:
     wxMutex routemutex;
 
 	
-	AIS_Target_Data* Get_Target_Data_From_RISindex(string risindex);
-
     bool m_bUsingWind;
     bool m_bUsingFollow;
     bool m_bInvalidPolarsFile;

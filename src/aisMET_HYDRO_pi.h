@@ -111,14 +111,11 @@ public:
     double GetCursorLat(void) { return m_cursor_lat; }
     double GetCursorLon(void) { return m_cursor_lon; }
 
-    void ShowPreferencesDialog(wxWindow* parent);
-
     bool m_bGribValid;
     double m_grib_lat, m_grib_lon;
     double m_tr_spd;
     double m_tr_dir;
 
-    wxString StandardPath();
     wxBitmap m_panelBitmap;
     Dlg* m_pDialog;
 
@@ -126,18 +123,6 @@ public:
 	
 	//
     aisMET_HYDRO_pi* plugin;
-
-	void    dbGetTable(wxString sql, char ***results, int &n_rows, int &n_columns);
-	void    dbFreeResults(char **results);
-	
-
-	// ******** Database stuff ******************************************
-	
-	
-	sqlite3          *m_database;
-	int               ret;
-    char             *err_msg;
-    bool              b_dbUsable;
 
 protected:
   
@@ -159,14 +144,6 @@ private:
     int m_leftclick_tool_id;
     bool m_baisMET_HYDROShowIcon;
     bool m_bShowaisMET_HYDRO;
-
-    bool m_bCopyUseAis;
-    bool m_bCopyUseFile;
-    wxString m_tCopyMMSI;
-
-	void OnContextMenuItemCallback(int id);
-	void SetCursorLatLon(double lat, double lon);
-
 	
 };
 
