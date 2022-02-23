@@ -570,7 +570,7 @@ wxString Dlg::MakeDescription(mylibais::Ais8_1_31 myData) {
 
 	wxString myDescription;
 	wxString cr = "\n";
-	int default;
+	int idefault  = 0;
 	
 	wxString sMMSI = wxString::Format("%i", pTargetData->MMSI);
 	myDescription += "MMSI: " + sMMSI + cr;
@@ -589,34 +589,33 @@ wxString Dlg::MakeDescription(mylibais::Ais8_1_31 myData) {
 
 	int wind_ave = myData.wind_ave;
 	wxString oWind_ave = wxString::Format("%i", wind_ave);
-	default = (int)wind_ave;
-	if (default == 127) {}
+	idefault = (int)wind_ave;
+	if (idefault == 127) {}
 		//myDescription += "Average wind speed: n/a" + cr;
 	else
 		myDescription += "Average wind speed: " + oWind_ave + " knots" + cr;
 
 	int wind_dir = myData.wind_dir;
 	wxString oWind_dir = wxString::Format("%i", wind_dir);
-	default = (int)wind_dir;
-	if (default == 360) {}
+	idefault = (int)wind_dir;
+	if (idefault == 360) {}
 		//myDescription += "Average wind speed: n/a" + cr;
 	else
 		myDescription += "Average wind direction: " + oWind_dir + " deg" + cr;
 
 	float air_press = myData.air_pres;
-	default = (int)air_press;
-	wxString outpress = wxString::Format("%i", default);
-	if (default == 1311 || default == 800) {}
+	idefault = (int)air_press;
+	wxString outpress = wxString::Format("%i", idefault);
+	if (idefault == 1311 || idefault == 800) {}
 		//myDescription += "Air pressure: n/a" + cr;
 	else
 		myDescription += "Air pressure:" + outpress + cr;
 
 	float surf_cur_speed = myData.surf_cur_speed;
 	wxString osurf_cur_speed = wxString::Format("%f", surf_cur_speed);
-	default = (int)surf_cur_speed;
-	if (default == 255) {}
+	idefault = (int)surf_cur_speed;
+	if (idefault != 255) 
 		//myDescription +=  "Surface current spd: n/a" + cr;
-	else 
 		myDescription += "Surface current spd: " + osurf_cur_speed + cr;
 
 	int water_level = myData.water_level;	
