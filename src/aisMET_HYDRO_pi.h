@@ -47,7 +47,6 @@
 #include "ocpn_plugin.h" //Required for OCPN plugin functions
 #include "aisMET_HYDROgui_impl.h"
 
-#include <sqlite3.h>
 #include <wx/thread.h>
 #include <map>
 #include <queue>
